@@ -1,22 +1,20 @@
 // server.js
-const express = require("express");
 
-const bodyParser = require("body-parser");
+const express = require("express");
+const app = express();
+const cookieParser = require("cookie-parser");
+app.use(cookieParser());
+app.use(express.json());
 const cors = require("cors");
 
 const DB = require("./connectDB/dbconnection");
 
-const app = express();
-app.use(bodyParser.json());
 app.use(cors());
 
-const cookieParser = require("cookie-parser");
-app.use(cookieParser());
-app.use(express.json());
+
 app.use(require("./routes/user"));
-const passport = require("passport");
-const path = require("path");
-require("./config/passport")(passport);
+// app.use(require("./routes/pokemon"));
+
 
 DB();
 // Run the server

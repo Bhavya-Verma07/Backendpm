@@ -23,8 +23,7 @@
 
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
-
-const userSchema = new mongoose.Schema(
+const userSchema = mongoose.Schema(
   {
     firstName: {
       type: String,
@@ -69,7 +68,7 @@ const userSchema = new mongoose.Schema(
   { timeStamps: true }
 );
 userSchema.methods.generateAuthToken = async function () {
- console.log(error);
+//  console.log(error);
   // }
   try {
    
@@ -84,5 +83,5 @@ userSchema.methods.generateAuthToken = async function () {
 };
 
 
-const User = mongoose.model("USER", userSchema);
-module.exports = User;
+const UserSCHEMA = mongoose.model("USER", userSchema);
+module.exports = UserSCHEMA;

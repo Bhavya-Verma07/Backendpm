@@ -1,6 +1,5 @@
 // // Create an API endpoint to adopt a Pokemon:
 
-
 // // routes/users.js
 // const express = require('express');
 // const router = express.Router();
@@ -36,19 +35,14 @@
 // });
 
 // module.exports = router;
-
-
+// const jwt = require('jsonwebtoken');
 const express = require("express");
 const router = express.Router();
-const UserSchema = require("../models/userSchema");
+const UserSCHEMA = require("../models/userSchema");
 const bcrypt = require("bcrypt");
 const authenticate = require("../middlewares/authenticate");
 const passport = require("passport");
-const {
-  signJWT,
-  setCookie,
-  clearCookie,
-} = require("../authorization/token");
+// const { signJWT, setCookie, clearCookie } = require("../authorization/token");
 
 router.post("/user", async (req, res) => {
   try {
@@ -56,15 +50,14 @@ router.post("/user", async (req, res) => {
     if (!firstName || !lastName || !email || !contactNo || !password) {
       return res.status(422).json({ error: "please fill all the fields" });
     }
-   
 
-    const result = await UserSchema.findOne({ email: email });
+    const result = await UserSCHEMA.findOne({ email: email });
     if (result) {
       res.status(422).json({ error: "User already exist" });
-      throw new Error("User already exists!"); 
+      throw new Error("User already exists!");
     }
-    const encryptedpass = await bcrypt.hash(password, 12); 
-    const newUser = new UserSchema({
+    const encryptedpass = await bcrypt.hash(password, 12);
+    const newUser = new UserSCHEMA({
       firstName,
       lastName,
       email,
@@ -87,8 +80,8 @@ router.post("/signin", async (req, res) => {
     if (!email || !password) {
       return res.status(400).json({ error: "Please fill the details" });
     }
-    const userLogin = await UserSchema.findOne({ email: email }); // in case email does not matched then null will be return by findOne
- 
+    const userLogin = await UserSCHEMA.findOne({ email: email }); // in case email does not matched then null will be return by findOne
+
     // for checking password
 
     if (!userLogin) {
@@ -114,24 +107,20 @@ router.post("/signin", async (req, res) => {
     console.log(error);
   }
 });
-//About us page
-router.get(
-  "/current",
-  passport.authenticate("user", { session: false }),
-  async (req, res) => {
-    const user = await UserSchema.findById(req.user.id);
-    res.json({ success: true, data: user });
-  }
-);
 
-//logout api
-router.get("/logout", function (req, res) {
-  try {
-    clearCookie(res);
-    return res.json({ success: true, message: "Logged out" });
-  } catch (err) {
-    return sendErrorResponse(res, err);
-  }
+
+//About us ka page
+router.get("/about", authenticate, (req, res) => {
+  console.log(`hello my About`);
+  res.json({ success: true, data: req.rootUser });
 });
+
+// Log out ka page
+router.get("/logout", (req, res) => {
+  // we are clearing the cookie once cookie clear then user will log out
+  res.clearCookie("jwtoken");
+  res.status(200).json({ message: "User logged out" });
+});
+module.exports = router;
 
 module.exports = router;

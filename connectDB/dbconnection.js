@@ -2,7 +2,7 @@
 const mongoose = require("mongoose");
 const connectDB = async () => {
   await mongoose
-    .connect("mongodb://localhost/pokemonAdoption", {
+    .connect("mongodb://localhost:27017/pokemonAdoption", {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     })
