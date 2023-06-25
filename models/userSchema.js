@@ -22,6 +22,7 @@
 
 
 const mongoose = require("mongoose");
+require("dotenv").config();
 const jwt = require("jsonwebtoken");
 const userSchema = mongoose.Schema(
   {
@@ -68,7 +69,7 @@ const userSchema = mongoose.Schema(
   { timeStamps: true }
 );
 userSchema.methods.generateAuthToken = async function () {
-//  console.log(error);
+ console.log(error);
   // }
   try {
    

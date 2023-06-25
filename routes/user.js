@@ -1,48 +1,11 @@
-// // Create an API endpoint to adopt a Pokemon:
-
-// // routes/users.js
-// const express = require('express');
-// const router = express.Router();
-// const User = require('../models/user');
-// const Pokemon = require('../models/pokemon');
-
-// // POST /users/:userId/adopt/:pokemonId
-// // Adopt a Pokemon
-// router.post('/:userId/adopt/:pokemonId', async (req, res) => {
-//   try {
-//     const { userId, pokemonId } = req.params;
-//     const user = await User.findById(userId);
-//     const pokemon = await Pokemon.findById(pokemonId);
-
-//     if (!user || !pokemon) {
-//       return res.status(404).json({ message: 'User or Pokemon not found' });
-//     }
-
-//     if (pokemon.adoptedBy) {
-//       return res.status(400).json({ message: 'Pokemon already adopted' });
-//     }
-
-//     pokemon.adoptedBy = user._id;
-//     user.adoptedPokemons.push(pokemon._id);
-
-//     await pokemon.save();
-//     await user.save();
-
-//     res.json({ message: 'Pokemon adopted successfully' });
-//   } catch (error) {
-//     res.status(500).json({ message: 'Internal server error' });
-//   }
-// });
-
-// module.exports = router;
-// const jwt = require('jsonwebtoken');
 const express = require("express");
 const router = express.Router();
-const UserSCHEMA = require("../models/userSchema");
+
 const bcrypt = require("bcrypt");
 const authenticate = require("../middlewares/authenticate");
-const passport = require("passport");
-// const { signJWT, setCookie, clearCookie } = require("../authorization/token");
+
+const UserSCHEMA = require("../models/userSchema");
+const POKEMONSCHEMA = require("../models/pokemonModel");
 
 router.post("/user", async (req, res) => {
   try {
@@ -108,7 +71,6 @@ router.post("/signin", async (req, res) => {
   }
 });
 
-
 //About us ka page
 router.get("/about", authenticate, (req, res) => {
   console.log(`hello my About`);
@@ -117,10 +79,78 @@ router.get("/about", authenticate, (req, res) => {
 
 // Log out ka page
 router.get("/logout", (req, res) => {
+  try{
+    res.clearCookie("jwtoken");
+    res.status(200).json({ message: "User logged out" });
+
+  }catch(err){
+    return sendErrorResponse(res, err);
+  }
   // we are clearing the cookie once cookie clear then user will log out
-  res.clearCookie("jwtoken");
-  res.status(200).json({ message: "User logged out" });
+ 
 });
 module.exports = router;
 
-module.exports = router;
+//for Pokemon**************************************************************************
+
+// Get all available Pokemon for adoption
+router.get("/pokemon", async (req, res) => {
+  try {
+    const availablePokemon = await POKEMONSCHEMA.find({ adoptedBy: null });
+    res.json(availablePokemon);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch available Pokemon" });
+  }
+});
+
+// Adopt a Pokemon
+router.post("/pokemon/:id/adopt", async (req, res) => {
+  const pokemonId = req.params.id;
+  const { user } = req.body;
+
+  try {
+    const pokemon = await POKEMONSCHEMA.findById(pokemonId);
+    if (!pokemon) {
+      return res.status(404).json({ error: "Pokemon not found" });
+    }
+
+    if (pokemon.adoptedBy) {
+      return res.status(400).json({ error: "Pokemon already adopted" });
+    }
+
+    pokemon.adoptedBy = user;
+    await pokemon.save();
+
+    res.json(pokemon);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to adopt the Pokemon" });
+  }
+});
+
+// Feed a Pokemon
+router.post("/pokemon/:id/feed", async (req, res) => {
+  const pokemonId = req.params.id;
+
+  try {
+    const pokemon = await POKEMONSCHEMA.findById(pokemonId);
+    if (!pokemon) {
+      return res.status(404).json({ error: "Pokemon not found" });
+    }
+
+    if (!pokemon.adoptedBy) {
+      return res.status(400).json({ error: "Pokemon has not been adopted" });
+    }
+
+    // Increase health status
+    pokemon.healthStatus++;
+    await pokemon.save();
+
+    res.json(pokemon);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to feed the Pokemon" });
+  }
+});
+
+
+
+

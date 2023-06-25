@@ -6,15 +6,11 @@ const cookieParser = require("cookie-parser");
 app.use(cookieParser());
 app.use(express.json());
 const cors = require("cors");
-
 const DB = require("./connectDB/dbconnection");
-
 app.use(cors());
-
-
 app.use(require("./routes/user"));
 // app.use(require("./routes/pokemon"));
-
+require("dotenv").config();
 
 DB();
 // Run the server
