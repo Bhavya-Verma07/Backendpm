@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/static/css/main.771c9c0b.css",
+    "main.js": "/static/js/main.e6274788.js",
+    "static/media/pokemonletsgo.jpg": "/static/media/pokemonletsgo.0fc0eb32596287125542.jpg",
+    "static/media/Pokemon-Logo.jpg": "/static/media/Pokemon-Logo.7a570125b0afc4a59d53.jpg",
+    "index.html": "/index.html",
+    "main.771c9c0b.css.map": "/static/css/main.771c9c0b.css.map",
+    "main.e6274788.js.map": "/static/js/main.e6274788.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.771c9c0b.css",
+    "static/js/main.e6274788.js"
+  ]
+}

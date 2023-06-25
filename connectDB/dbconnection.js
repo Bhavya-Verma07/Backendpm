@@ -1,16 +1,18 @@
 // Connection to MongoDB database
+
 const mongoose = require("mongoose");
-const connectDB = async () => {
-  await mongoose
-    .connect("mongodb://localhost:27017/pokemonAdoption", {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    })
-    .then(() => {
-      console.log("Connected to MongoDB");
-    })
-    .catch((error) => {
-      console.log("Failed to connect to MongoDB:", error);
-    });
+
+const connectDB =async()=>{
+    try {
+       await mongoose.connect(process.env.DB, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+        });
+        console.log("mongodb is connected");
+    } catch (error) {
+       console.log(error); 
+       console.log("Database is not connected");
+    }
 };
+
 module.exports = connectDB;
